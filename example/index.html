@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codeval</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/codemirror@5.40.2/lib/codemirror.css" crossorigin="anonymous">
+  <script crossorigin src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/codemirror@5.40.2/lib/codemirror.js"></script>
+  <script crossorigin src="https://unpkg.com/codemirror@5.40.2/mode/javascript/javascript.js"></script>
+  <script crossorigin src="https://unpkg.com/codemirror@5.40.2/mode/xml/xml.js"></script>
+  <script crossorigin src="https://unpkg.com/codemirror@5.40.2/mode/jsx/jsx.js"></script>
+  <script src="codeval.js"></script>
+  <style type="text/css">
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .container-fluid {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <script type="text/javascript">
+    const { initRunner, imports } = Codeval;
+
+    imports.addImportedModule('react', () => ({
+      default: React,
+      ...React,
+      __esModule: true,
+    }));
+
+    imports.addImportedModule('react-dom', () => ({
+      default: ReactDOM,
+      ...ReactDOM,
+      __esModule: true,
+    }));
+
+    const execute = initRunner();
+
+    $(window).ready(() => {
+      const frame = $('#playground').get(0);
+      const cm = CodeMirror($('#editor').get(0), {
+        value: `
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom';
+
+const root = document.createElement('div');
+document.body.appendChild(root);
+
+const Button = ({ text, ...props }) =>
+  <button {...props}>{text}</button>;
+
+let times = 0;
+
+const buttonClick = () => {
+  const info = document.createElement('div');
+  info.innerText = \`Button clicked $\{++times\} times\`;
+  document.body.appendChild(info);
+};
+
+ReactDOM.render(
+  <Fragment>
+    <h1>Hello World!</h1>
+    <Button text="Click Me!" onClick={buttonClick} />
+  </Fragment>,
+  root,
+);
+`,
+        lineNumbers: true,
+        mode: 'jsx'
+      });
+
+      cm.setSize('100%', '100%');
+
+      $(frame).on('load', () => {
+        const code = cm.getValue();
+
+        execute(code, frame.contentWindow);
+      });
+
+      $('#execute').on('click', () => {
+        frame.contentWindow.location.reload();
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container-fluid h-100">
+    <div class="row p-2">
+      <div class="col-12">
+        <h1>Codeval</h1>
+      </div>
+    </div>
+    <div class="row h-100">
+      <div id="editor" class="col-6 h-100"></div>
+      <iframe id="playground" class="col-6 h-100"></iframe>
+    </div>
+    <div class="row p-2">
+      <div class="col-12"><button id="execute" class="btn btn-success">Execute</button></div>
+    </div>
+  </div>
+</body>
+
+</html>
