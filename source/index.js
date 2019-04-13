@@ -14,6 +14,8 @@ import { transform, babel } from './transform';
 
 import { initRunner } from './runner';
 
+import { findRequiredDependencyNames } from './code';
+
 export {
   helpers,
   evaluate,
@@ -27,4 +29,5 @@ export {
   transform,
   babel,
   initRunner,
+  findRequiredDependencyNames,
 };

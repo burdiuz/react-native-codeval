@@ -34,18 +34,28 @@ export const requireOnce = (packageName) => {
   return factory;
 };
 
-export const initCacheableRequire = () => {
+export const initCacheableRequire = (prepareCacheMap = null) => {
   const cache = new Map();
 
-  return (packageName) => {
+  if (prepareCacheMap) {
+    prepareCacheMap(cache);
+  }
+
+  const cacheableRequire = (packageName) => {
     let factory = cache.get(packageName);
 
     if (!factory) {
       factory = requireOnce(packageName);
-    }
 
-    cache.set(packageName, factory);
+      cache.set(packageName, factory);
+    }
 
     return factory();
   };
+
+  cacheableRequire.cache = cache;
+
+  cacheableRequire.require = cacheableRequire;
+
+  return cacheableRequire;
 };

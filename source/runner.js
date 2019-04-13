@@ -4,22 +4,22 @@ import { initCacheableRequire } from './require';
 import { transform } from './transform';
 import { evaluate } from './evaluate';
 
-export const initRunner = (customGlobals = {}) => {
-  const require = initCacheableRequire();
+export const initRunner = (customGlobals = {}, prepareCacheMap = null) => {
+  const requireFn = initCacheableRequire(prepareCacheMap);
 
-  return (source, globals = {}) =>
-    new Promise((resolve, reject) => {
-      transform(source)
-        .then((code) => {
-          const result = evaluate(code, {
-            require,
-            ...getCurrentGlobals(),
-            ...customGlobals,
-            ...globals,
-          });
+  return async (source, globals = {}, asyncPostTransformHandler = null) => {
+    let currentRequireFn = requireFn;
+    const code = await transform(source);
 
-          resolve(result);
-        })
-        .catch(reject);
+    if (asyncPostTransformHandler) {
+      currentRequireFn = await asyncPostTransformHandler(code, requireFn);
+    }
+
+    return evaluate(code, {
+      require: currentRequireFn,
+      ...getCurrentGlobals(),
+      ...customGlobals,
+      ...globals,
     });
+  };
 };
