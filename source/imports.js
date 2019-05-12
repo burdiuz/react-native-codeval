@@ -1,4 +1,5 @@
 import { valuesMapFactory } from '@actualwave/closure-value';
+import isFunction from '@actualwave/is-function';
 
 export const {
   get: getImportedModule,
@@ -6,6 +7,16 @@ export const {
   has: hasImportedModule,
   delete: removeImportedModule,
 } = valuesMapFactory();
+
+export const addImportedModules = (hash) =>
+  Object.keys(hash).forEach((name) => {
+    const fn = hash[name];
+    if (!isFunction(fn)) {
+      throw new Error('Imported Module must be a factory function.');
+    }
+
+    addImportedModule(name, fn);
+  });
 
 /* FIXME allow to import latest app version or its history items marked as "permanent".
 export const resolveName = (name, getState) => {

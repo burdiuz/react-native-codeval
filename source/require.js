@@ -34,11 +34,11 @@ export const requireOnce = (packageName) => {
   return factory;
 };
 
-export const initCacheableRequire = (prepareCacheMap = null) => {
+export const initCacheableRequire = (prepareCacheMapFn = null) => {
   const cache = new Map();
 
-  if (prepareCacheMap) {
-    prepareCacheMap(cache);
+  if (prepareCacheMapFn) {
+    prepareCacheMapFn(cache);
   }
 
   const cacheableRequire = (packageName) => {

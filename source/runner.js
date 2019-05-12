@@ -4,12 +4,12 @@ import { initCacheableRequire } from './require';
 import { transform } from './transform';
 import { evaluate } from './evaluate';
 
-export const initRunner = (customGlobals = {}, prepareCacheMap = null) => {
-  const requireFn = initCacheableRequire(prepareCacheMap);
+export const initRunner = (customGlobals = {}, prepareCacheMapFn = null) => {
+  const requireFn = initCacheableRequire(prepareCacheMapFn);
 
-  return async (source, globals = {}, asyncPostTransformHandler = null) => {
+  return async (source, globals = {}, asyncPostTransformHandler = null, skipTransform = false) => {
     let currentRequireFn = requireFn;
-    const code = await transform(source);
+    const code = skipTransform ? source : await transform(source);
 
     if (asyncPostTransformHandler) {
       currentRequireFn = await asyncPostTransformHandler(code, requireFn);

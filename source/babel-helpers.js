@@ -1,4 +1,4 @@
-import babel from '@babel/standalone';
+import * as babel from '@babel/standalone';
 
 const HELPER_PACKAGE = '@babel/runtime/helpers/';
 const PACKAGE_NAME_LENGTH = HELPER_PACKAGE.length;

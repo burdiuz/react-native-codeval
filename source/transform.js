@@ -1,4 +1,4 @@
-import babel from '@babel/standalone';
+import * as babel from '@babel/standalone';
 import preset from 'metro-react-native-babel-preset';
 
 /*
