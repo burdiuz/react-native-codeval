@@ -1,5 +1,10 @@
 import * as babel from '@babel/standalone';
 
+import { addImportedModule } from './imports';
+
+// async/await support 
+addImportedModule('@babel/runtime/regenerator', () => require('@babel/runtime/regenerator'));
+
 const HELPER_PACKAGE = '@babel/runtime/helpers/';
 const PACKAGE_NAME_LENGTH = HELPER_PACKAGE.length;
 
