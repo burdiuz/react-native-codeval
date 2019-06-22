@@ -1,14 +1,19 @@
 import { valuesMapFactory } from '@actualwave/closure-value';
 import isFunction from '@actualwave/is-function';
 
-export const {
+const {
+  values,
   get: getImportedModule,
   set: addImportedModule,
   has: hasImportedModule,
   delete: removeImportedModule,
 } = valuesMapFactory();
 
-export const addImportedModules = (hash) =>
+const listImportedModules = () => {
+  return Array.from(values.keys());
+};
+
+const addImportedModules = (hash) =>
   Object.keys(hash).forEach((name) => {
     const fn = hash[name];
     if (!isFunction(fn)) {
@@ -42,3 +47,5 @@ export const resolveName = (name, getState) => {
   throw new Error('Cannot parse app name import.');
 };
 */
+
+export { getImportedModule, addImportedModule, addImportedModules, hasImportedModule, removeImportedModule, listImportedModules };
