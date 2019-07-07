@@ -50,6 +50,10 @@ export const initCacheableRequire = (prepareCacheMapFn = null) => {
       cache.set(packageName, factory);
     }
 
+    if(!factory) {
+      throw new Error(`Package "${packageName}" not found.`);
+    }
+
     return factory();
   };
 
