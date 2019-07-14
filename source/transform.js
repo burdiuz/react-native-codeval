@@ -1,5 +1,7 @@
 import * as babel from '@babel/standalone';
 import preset from 'metro-react-native-babel-preset';
+import decoratorsPlugin from '@babel/plugin-proposal-decorators';
+import graphqlTagPlugin from 'babel-plugin-graphql-tag';
 
 /*
 import externalHelpers from '@babel/plugin-external-helpers';
@@ -7,6 +9,8 @@ babel.registerPlugin('external-helpers', externalHelpers);
 */
 
 babel.registerPreset('metro-react-native-babel-preset', preset);
+babel.registerPlugin('@babel/plugin-proposal-decorators', decoratorsPlugin);
+babel.registerPlugin('babel-plugin-graphql-tag', graphqlTagPlugin);
 
 export const defaultConfig = {
   comments: false,
@@ -15,6 +19,15 @@ export const defaultConfig = {
   ast: false,
   code: true,
   presets: ['metro-react-native-babel-preset'],
+  plugins: [
+    [
+      '@babel/plugin-proposal-decorators',
+      {
+        decoratorsBeforeExport: true,
+      },
+    ],
+    'babel-plugin-graphql-tag',
+  ],
 };
 
 /**
