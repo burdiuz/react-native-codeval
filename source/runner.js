@@ -7,9 +7,15 @@ import { evaluate } from './evaluate';
 export const initRunner = (customGlobals = {}, prepareCacheMapFn = null) => {
   const requireFn = initCacheableRequire(prepareCacheMapFn);
 
-  return async (source, globals = {}, asyncPostTransformHandler = null, skipTransform = false) => {
+  return async (
+    source,
+    globals = {},
+    asyncPostTransformHandler = null,
+    skipTransform = false,
+    filename = undefined,
+  ) => {
     let currentRequireFn = requireFn;
-    const code = skipTransform ? source : await transform(source);
+    const code = skipTransform ? source : await transform(source, filename);
 
     if (asyncPostTransformHandler) {
       currentRequireFn = await asyncPostTransformHandler(code, requireFn);
