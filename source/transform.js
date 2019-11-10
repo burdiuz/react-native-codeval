@@ -33,8 +33,6 @@ const defaultConfig = {
   configFile: false,
   babelrc: false,
   babelrcRoots: false,
-  presets: defaultPresets,
-  plugins: defaultPlugins,
 };
 
 /**
@@ -47,8 +45,8 @@ const transform = (input, filename = 'index.js', { presets = [], plugins = [], .
       filename,
       ...defaultConfig,
       ...config,
-      presets: [defaultPresets, ...presets],
-      presets: [defaultPlugins, ...plugins],
+      presets: [...defaultPresets, ...presets],
+      plugins: [...defaultPlugins, ...plugins],
     })
     .then((result) => {
       if (!result || !result.code) {
