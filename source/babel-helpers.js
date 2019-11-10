@@ -1,8 +1,8 @@
-import * as babel from '@babel/standalone';
+import * as babel from '@babel/core';
 
 import { addImportedModule } from './imports';
 
-// async/await support 
+// async/await support
 addImportedModule('@babel/runtime/regenerator', () => require('@babel/runtime/regenerator'));
 
 const HELPER_PACKAGE = '@babel/runtime/helpers/';
@@ -12,10 +12,12 @@ export const isHelperPackageName = (name) => name.indexOf(HELPER_PACKAGE) === 0;
 
 export const getHelperNameFromPackage = (packageName) => packageName.substr(PACKAGE_NAME_LENGTH);
 
-export const generateHelpers = (list, global = {}) => {
-  eval(babel.buildExternalHelpers(list));
+export const generateHelpers = () => {
+  const global = {};
 
-  return global.babelHelpers || {};
+  eval(babel.buildExternalHelpers());
+
+  return global.babelHelpers;
 };
 
 export const initHelpers = () => {

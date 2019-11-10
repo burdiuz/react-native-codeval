@@ -17,5 +17,5 @@ export const generateEnvironment = (__$__globals__) => {
 export const evaluate = (code, globals = {}) => {
   const env = generateEnvironment(globals);
 
-    return env(code);
+  return env(code);
 };

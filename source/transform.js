@@ -1,66 +1,63 @@
-import * as babel from '@babel/standalone';
-import preset from 'metro-react-native-babel-preset';
-import decoratorsPlugin from '@babel/plugin-proposal-decorators';
-import graphqlTagPlugin from 'babel-plugin-graphql-tag';
+import * as babel from '@babel/core';
 
 /*
-import externalHelpers from '@babel/plugin-external-helpers';
-babel.registerPlugin('external-helpers', externalHelpers);
+  Babel tries to load package.json even when global and per-file configs are disabled(uses fs.existsSync(), fs.statSync(), etc.).
+  Since react-native-level-fs does not implements *Sync functions from node's fs, this causes errors.
+  So, I've added dummies for existsSync() and statSync() just to work-around this error.
 */
+const fs = require('react-native-level-fs');
+fs.default = fs.default || fs;
 
-babel.registerPreset('metro-react-native-babel-preset', preset);
-babel.registerPlugin('@babel/plugin-proposal-decorators', decoratorsPlugin);
-babel.registerPlugin('babel-plugin-graphql-tag', graphqlTagPlugin);
+fs.default.existsSync = fs.default.existsSync || (() => false);
+fs.default.statSync =
+  fs.default.statSync ||
+  (() => {
+    const error = new Error(
+      'statSync() function does not exist in react-native-level-fs and is mocked to work with @babel/core which desperately tries to load package.json.',
+    );
+    error.code = 'ENOENT';
 
-export const defaultConfig = {
+    throw error;
+  });
+
+const defaultPresets = [require('metro-react-native-babel-preset')];
+
+const defaultPlugins = [];
+
+const defaultConfig = {
   comments: false,
   compact: false,
   retainLines: true,
   ast: false,
   code: true,
-  presets: ['metro-react-native-babel-preset'],
-  plugins: [
-    [
-      '@babel/plugin-proposal-decorators',
-      {
-        decoratorsBeforeExport: true,
-      },
-    ],
-    'babel-plugin-graphql-tag',
-  ],
+  configFile: false,
+  babelrc: false,
+  babelrcRoots: false,
+  presets: defaultPresets,
+  plugins: defaultPlugins,
 };
 
 /**
  FIXME use babel config and utilize ENV settings
  retainLines
 */
-const transform = (input, filename = 'index.js', config = {}) =>
-  new Promise((resolve, reject) => {
-    const syncResult = babel.transform(
-      input,
-      { filename, ...defaultConfig, ...config },
-      (error, result) => {
-        if (syncResult) {
-          return;
-        }
+const transform = (input, filename = 'index.js', { presets = [], plugins = [], ...config } = {}) =>
+  babel
+    .transformAsync(input, {
+      filename,
+      ...defaultConfig,
+      ...config,
+      presets: [defaultPresets, ...presets],
+      presets: [defaultPlugins, ...plugins],
+    })
+    .then((result) => {
+      if (!result || !result.code) {
+        return Promise.reject(result);
+      }
 
-        if (error) {
-          reject(error);
-        } else {
-          const { code /* , map, ast */ } = result;
+      return result.code;
+    });
 
-          resolve(code);
-        }
-      },
-    );
-
-    if (syncResult && syncResult.code) {
-      resolve(syncResult.code);
-    } else {
-      reject(syncResult);
-    }
-  });
-
-export { babel, preset, transform };
+export { babel, transform };
 
 export default transform;
