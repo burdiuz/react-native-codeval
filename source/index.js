@@ -6,6 +6,8 @@ import * as globals from './globals';
 
 import * as imports from './imports';
 
+import * as plugins from './plugins';
+
 import { getModuleFactory, initCacheableRequire, requireOnce } from './require';
 
 import * as resolvers from './resolvers';
@@ -22,6 +24,7 @@ export {
   generateEnvironment,
   globals,
   imports,
+  plugins,
   getModuleFactory,
   initCacheableRequire,
   requireOnce,

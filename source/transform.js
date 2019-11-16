@@ -1,5 +1,6 @@
 import * as babel from '@babel/core';
 
+import { getTranspilerPlugins } from './plugins';
 /*
   Babel tries to load package.json even when global and per-file configs are disabled(uses fs.existsSync(), fs.statSync(), etc.).
   Since react-native-level-fs does not implements *Sync functions from node's fs, this causes errors.
@@ -8,10 +9,10 @@ import * as babel from '@babel/core';
 const fs = require('react-native-level-fs');
 fs.default = fs.default || fs;
 
-fs.default.existsSync = fs.default.existsSync || (() => false);
+fs.default.existsSync = fs.default.existsSync || ((name) => false);
 fs.default.statSync =
   fs.default.statSync ||
-  (() => {
+  ((name) => {
     const error = new Error(
       'statSync() function does not exist in react-native-level-fs and is mocked to work with @babel/core which desperately tries to load package.json.',
     );
@@ -46,7 +47,7 @@ const transform = (input, filename = 'index.js', { presets = [], plugins = [], .
       ...defaultConfig,
       ...config,
       presets: [...defaultPresets, ...presets],
-      plugins: [...defaultPlugins, ...plugins],
+      plugins: [...defaultPlugins, ...getTranspilerPlugins(), ...plugins],
     })
     .then((result) => {
       if (!result || !result.code) {
