@@ -1,15 +1,15 @@
 /* eslint-disable import/prefer-default-export */
-import { getCurrentGlobals } from './globals';
+import { createGlobalObject } from './globals';
 import { initCacheableRequire } from './require';
 import { transform } from './transform';
 import { evaluate } from './evaluate';
 
-export const initRunner = (customGlobals = {}, prepareCacheMapFn = null) => {
+export const initRunner = (sharedGlobals = {}, prepareCacheMapFn = null) => {
   const requireFn = initCacheableRequire(prepareCacheMapFn);
 
   return async (
     source,
-    globals = {},
+    customGlobals = {},
     asyncPostTransformHandler = null,
     skipTransform = false,
     filename = undefined,
@@ -21,11 +21,14 @@ export const initRunner = (customGlobals = {}, prepareCacheMapFn = null) => {
       currentRequireFn = await asyncPostTransformHandler(code, requireFn);
     }
 
-    return evaluate(code, {
-      require: currentRequireFn,
-      ...getCurrentGlobals(),
-      ...customGlobals,
-      ...globals,
-    });
+    const globals = createGlobalObject(
+      {
+        require: currentRequireFn,
+      },
+      sharedGlobals,
+      customGlobals,
+    );
+
+    return evaluate(code, globals);
   };
 };

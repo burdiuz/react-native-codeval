@@ -22,6 +22,7 @@
     "react-native-level-fs": "^3.0.0"
   },
   "dependencies": {
+    "@actualwave/assign-own-props": "gist:f530f5d53f5a74e5155cd43cf060e808",
     "@actualwave/closure-value": "0.0.3",
     "@babel/core": "^7.7.2",
     "@babel/generator": "^7.7.2",
